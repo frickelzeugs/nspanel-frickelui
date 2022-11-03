@@ -1,8 +1,14 @@
 
 # nspanel-frickelui
+![frickel-ui-home](https://user-images.githubusercontent.com/98703239/199835836-0d1642c9-849c-4640-a3dc-21c97ee9b02d.png)
+![frickel-ui-mail](https://user-images.githubusercontent.com/98703239/199835869-cc616bbb-a8e3-424b-9023-10553d773237.png)
+![frickel-ui-alarm](https://user-images.githubusercontent.com/98703239/199836716-34efd4a4-eabf-475e-8079-87583a08eaf5.png)
+![frickel-ui-lights](https://user-images.githubusercontent.com/98703239/199835889-c11cc086-7bc7-472d-a23b-20d4dd833271.png)
+![frickel-ui-shutters](https://user-images.githubusercontent.com/98703239/199835907-ce07ee27-0a61-48cb-b34b-d5aaf4590374.png)
+![frickel-ui-garage](https://user-images.githubusercontent.com/98703239/199835917-9ee15e28-cadb-41f7-bebc-9f345cb1f397.png)
 
 ## Disclaimer:
-I uploaded my custom NSPanel UI because some of you asked for it after watching https://www.youtube.com/watch?v=MCayBntBlqk. The project was released as is. If you can use the UI 1:1 without any further changes: go for it! I don't plan any further development or adjustments to it. If you want this you have to do it yourself. But be warned, working with the Nextion display is anything but straightforward and takes up a lot of time.
+I uploaded my custom NSPanel UI because some of you asked for it after watching https://www.youtube.com/watch?v=MCayBntBlqk. The project was released as is and this ui is absolutely tailored to my needs, so I'm not sure if you find it useful. If it fits for you: go for it! But I don't plan any further development or adjustments. If you want this, you have to do it yourself and use my files as a base. But be warned, working with the Nextion display is anything but straightforward and takes up a lot of time.
 
 ## Quick notes I wrote down for myself to remember (sorry, not a full guide, maybe later)
 - Flash Tasmota on the NSPanel (search the net for existing tutorials)
