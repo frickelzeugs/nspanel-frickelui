@@ -1,0 +1,235 @@
+rule "NSPanel Update"
+when
+    Item OffeneFenster changed or
+    Item Wetter_Aussentemperatur_gefuehlt changed or
+    Item GAR_Garagentor changed or
+    Item LocalWeatherandForecast_IconID changed or
+    Item AlarmHuellschutz changed or
+    Item AlarmVollschutz changed or
+    Item FlurHaustuer_LockAndGo changed or
+    Item FlurHaustuer_Lock changed or
+    Item BeleuchtungHaus changed or
+    Item BeleuchtungUG changed or
+    Item BeleuchtungEG changed or
+    Item BeleuchtungDG changed or
+    Item BriefkastenNeuePost changed or
+    Item NSPanelHaustuer_Init changed to ON
+then
+    
+    var statusText = ""
+    var updateStatusText = false
+
+    // Fenster
+    if ((triggeringItemName == "OffeneFenster") || (triggeringItemName == "NSPanelHaustuer_Init")) {
+
+        if (gWindows.state == CLOSED)
+            NSPanelHaustuer_Command.sendCommand("home.bWindow.pic=8")
+        else
+            NSPanelHaustuer_Command.sendCommand("home.bWindow.pic=9")
+    }
+
+    // Wetter
+    if ((triggeringItemName == "Wetter_Aussentemperatur_gefuehlt") || (triggeringItemName == "LocalWeatherandForecast_IconID") || (triggeringItemName == "BriefkastenNeuePost") || (triggeringItemName == "NSPanelHaustuer_Init")) {
+        NSPanelHaustuer_Command.sendCommand("home.temp_outside.txt=\"" + Wetter_Aussentemperatur_gefuehlt.state.format("%.1f°C") + "\"")
+        if (BriefkastenNeuePost.state == ON) {
+            NSPanelHaustuer_Command.sendCommand("home.weather_icon.pic=57")
+            NSPanelHaustuer_Command.sendCommand("home.flashingicon.en=1")
+        } else {
+            var iconid = transform("MAP", "nspanelweather.map", LocalWeatherandForecast_3h_IconID.state.toString)
+            NSPanelHaustuer_Command.sendCommand("home.weather_icon.pic=" + iconid)
+            NSPanelHaustuer_Command.sendCommand("home.flashingicon.en=0")
+        }
+    }
+
+    // Lock'n go Button
+    if ((triggeringItemName == "FlurHaustuer_LockAndGo") || (triggeringItemName == "FlurHaustuer_Lock") ||(triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (FlurHaustuer_LockAndGo.state == ON) {
+            NSPanelHaustuer_Command.sendCommand("home.bLockngo.pic=3")
+            NSPanelHaustuer_Buzzer.sendCommand("-1,1,6")
+            statusText += "Alarm wird nach Schließen der Haustür scharf geschaltet. Bis bald!"
+            updateStatusText = true
+        } else if (FlurHaustuer_Lock.state == ON) {
+            NSPanelHaustuer_Command.sendCommand("home.bLockngo.pic=56") // locked icon
+            updateStatusText = true
+        } else {
+            NSPanelHaustuer_Command.sendCommand("home.bLockngo.pic=2")
+            NSPanelHaustuer_Buzzer.sendCommand("0")
+            updateStatusText = true
+        }
+    }    
+
+    // Licht Haus
+    if ((triggeringItemName == "BeleuchtungHaus") ||  (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (BeleuchtungHaus.state == ON) {
+            NSPanelHaustuer_Command.sendCommand("home.bLight.pic=6")
+            NSPanelHaustuer_Command.sendCommand("lights.bAll.pic=24")
+        }
+        else {
+            NSPanelHaustuer_Command.sendCommand("home.bLight.pic=5")
+            NSPanelHaustuer_Command.sendCommand("lights.bAll.pic=23")
+        }
+    }
+
+    // Licht UG
+    if ((triggeringItemName == "BeleuchtungUG") ||  (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (BeleuchtungUG.state == ON)
+            NSPanelHaustuer_Command.sendCommand("lights.bUG.pic=24")
+        else
+            NSPanelHaustuer_Command.sendCommand("lights.bUG.pic=23")
+    }
+
+    // Licht EG
+    if ((triggeringItemName == "BeleuchtungEG") ||  (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (BeleuchtungEG.state == ON)
+            NSPanelHaustuer_Command.sendCommand("lights.bEG.pic=24")
+        else
+            NSPanelHaustuer_Command.sendCommand("lights.bEG.pic=23")
+    }
+
+    // Licht DG
+    if ((triggeringItemName == "BeleuchtungDG") ||  (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (BeleuchtungDG.state == ON)
+            NSPanelHaustuer_Command.sendCommand("lights.bDG.pic=24")
+        else
+            NSPanelHaustuer_Command.sendCommand("lights.bDG.pic=23")
+    }
+
+    
+    // Garage Button
+    if ((triggeringItemName == "GAR_Garagentor") || (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (GAR_Garagentor.state == 100) {
+            NSPanelHaustuer_Command.sendCommand("home.bGarage.pic=11")
+            NSPanelHaustuer_Command.sendCommand("garage.bGaragePopup.pic=52")
+        } else if (GAR_Garagentor.state == 0) {
+            NSPanelHaustuer_Command.sendCommand("home.bGarage.pic=12")
+            NSPanelHaustuer_Command.sendCommand("garage.bGaragePopup.pic=53")
+        } else {
+            NSPanelHaustuer_Command.sendCommand("home.bGarage.pic=13")
+            NSPanelHaustuer_Command.sendCommand("garage.bGaragePopup.pic=54")
+        }
+    }
+
+    // Alarm Button
+    if ((triggeringItemName == "AlarmHuellschutz") || (triggeringItemName == "AlarmVollschutz") || (triggeringItemName == "NSPanelHaustuer_Init")) {
+        if (AlarmVollschutz.state == ON)
+            NSPanelHaustuer_Command.sendCommand("home.bAlarm.pic=16")
+        else if (AlarmHuellschutz.state == ON)
+            NSPanelHaustuer_Command.sendCommand("home.bAlarm.pic=15")
+        else
+            NSPanelHaustuer_Command.sendCommand("home.bAlarm.pic=14")
+    }
+
+
+    // Status Text
+    if ((triggeringItemName == "OffeneFenster") || (triggeringItemName == "NSPanelHaustuer_Init") || (updateStatusText)) {
+        if (statusText.length > 0)
+            statusText += "\\r"
+        if(OffeneFenster.state != "-") {
+            statusText += "Offene Fenster: " + OffeneFenster.state
+        }
+        NSPanelHaustuer_Command.sendCommand("home.status.txt=\"" + statusText + "\"")
+    }
+
+ 
+end
+
+
+rule "NSPanel Message received"
+when
+    Item NSPanelHaustuer_Result received update
+then
+    if (NSPanelHaustuer_Result.state == "booted")
+        NSPanelHaustuer_Init.sendCommand(ON)
+    else {
+        var componentId = transform("REGEX", "bytes\\('(.*?)'\\)", NSPanelHaustuer_Result.state.toString())
+        //NSPanelHaustuer_Command.sendCommand("home.status.txt=\"" + componentId + "\"")
+
+        switch (componentId) {
+            case "65000701": {
+                //weather/mail icon
+                if (BriefkastenNeuePost.state == ON) {
+                    BriefkastenNeuePost.sendCommand(OFF)
+                }
+            }
+            case "65000801": {
+                //lock&go button
+                if (FlurHaustuer_Lock.state == ON) {
+                    FlurHaustuer_Lock.sendCommand(OFF)
+                } else if (FlurHaustuer_LockAndGo.state == OFF) {
+                    FlurHaustuer_LockAndGo.sendCommand(ON)
+                } else {
+                    FlurHaustuer_LockAndGo.sendCommand(OFF)
+                }
+            }
+            case "65000A01": {
+                //window button
+            }
+            case "65000B01": {
+                //garage button
+            }
+            case "65000C01": {
+                //Alarm button
+                AlarmVollschutz.sendCommand(OFF)
+                AlarmHuellschutz.sendCommand(OFF)
+            }
+            case "65010501": {
+                //DG licht aus button
+                BeleuchtungDG.sendCommand(OFF)
+            }
+            case "65010401": {
+                //EG licht aus button
+                BeleuchtungEG.sendCommand(OFF)
+            }
+            case "65010301": {
+                //UG licht aus button
+                BeleuchtungUG.sendCommand(OFF)
+            }
+            case "65010201": {
+                //Alle lichter aus button
+                BeleuchtungHaus.sendCommand(OFF)
+            }
+            case "65030301": {
+                //Garage auf
+                GAR_Garagentor.sendCommand(UP)
+            }
+            case "65030401": {
+                //Garage zu
+                GAR_Garagentor.sendCommand(DOWN)
+            }
+
+            case "65020301": {
+                //Rollos DG auf
+                RolllaedenDG.sendCommand(UP)
+            }
+            case "65020401": {
+                //Rollos DG zu
+                RolllaedenDG.sendCommand(DOWN)
+            }
+            case "65020501": {
+                //Rollos EG auf
+                RolllaedenEG.sendCommand(UP)
+            }
+            case "65020801": {
+                //Rollos EG zu
+                RolllaedenEG.sendCommand(DOWN)
+            }
+            case "65020601": {
+                //Rollos UG auf
+                RolllaedenUG.sendCommand(UP)
+            }
+            case "65020901": {
+                //Rollos UG zu
+                RolllaedenUG.sendCommand(DOWN)
+            }
+            case "65020701": {
+                //Rollos Alle auf
+                Rolllaeden.sendCommand(UP)
+            }
+            case "65020A01": {
+                //Rollos Alle zu
+                Rolllaeden.sendCommand(DOWN)
+            }
+              
+        }
+    }
+end
